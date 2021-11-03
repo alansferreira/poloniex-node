@@ -17,6 +17,25 @@ import {
 import { DateTime } from "luxon";
 import * as httpService from './http-queue.service';
 import { RequestGetQueue } from './http-queue.service';
+interface IChartCandleRaw {
+  date: string,
+  high: string,
+  low: string,
+  open: string,
+  close: string,
+  volume: string,
+  quoteVolume: string,
+  weightedAverage: string,
+}
+
+interface IOrderBookRaw {
+  isFrozen: string,
+  seq: string,
+  postOnly: string,
+  asks: [string[]],
+  bids: [string[]]
+}
+
 
 class PublicApi {
   /**
@@ -88,16 +107,7 @@ class PublicApi {
           const url = `https://poloniex.com/public?command=returnChartData&currencyPair=${op.currencyPair}&start=${op.start.getTime() / 1000}&end=${op.end.getTime() / 1000}&period=${period}`;
 
           const reqOptions = new RequestGetQueue(url)
-          const { result } = (await httpService.enqueue<[{
-            date: string,
-            high: string,
-            low: string,
-            open: string,
-            close: string,
-            volume: string,
-            quoteVolume: string,
-            weightedAverage: string,
-          }]>(reqOptions));
+          const { result } = (await httpService.enqueue<IChartCandleRaw[]>(reqOptions));
 
           return result.map(({
             date,
@@ -145,29 +155,10 @@ class PublicApi {
           const url = `https://poloniex.com/public?command=returnOrderBook&currencyPair=${(currencyPair ? currencyPair : 'all')}`;
           const reqOptions = new RequestGetQueue(url)
           const { result } = (
-            await httpService.enqueue<{
-              isFrozen: string,
-              seq: string,
-              postOnly: string,
-              asks: [string[]],
-              bids: [string[]]
-            }>(reqOptions)
+            await httpService.enqueue<IOrderBookRaw>(reqOptions)
           )
 
-          const {
-            isFrozen,
-            seq,
-            postOnly,
-            asks,
-            bids
-          } = result;
-          // const { result } = (await httpService.enqueue<{
-          //   isFozen: string,
-          //   seq: string,
-          //   postOnly: string,
-          //   asks: [[]],
-          //   bids: [[]]
-          // }>(reqOptions));
+          const { isFrozen, seq, postOnly, asks, bids } = result;
 
           return {
             currencyName: currencyPair,

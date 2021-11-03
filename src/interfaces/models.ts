@@ -30,29 +30,36 @@ export interface ILoanOrder extends IAditionalCommonInfo {
     demands: ILoanOrderAmount[];
 }
 export interface ITrade {
-    date: Date;
-    type: string;
-    rate: number;
-    amount: number;
-    total: number;
-}
+    globalTradeID: number,
+    tradeID:string,
+    date:string,
+    rate:number,
+    amount:number,
+    total:number,
+    fee:number,
+    feeDisplay:number,
+    orderNumber:number,
+    type:string,
+    category:string,
+  }
 
 export interface IReturnTradeHistoryOptions {
     currencyPair?: string;
     start: Date;
     end?: Date;
 }
-export interface IFeeInfoResult {
+export interface IFeeInfo {
     makerFee: number;
     takerFee: number;
+    marginMakerFee: number
+    marginTakerFee: number
     thirtyDayVolume: number;
     nextTier: number;
 }
-export interface IBalance {
-    name: string;
+export interface IBalance extends IAditionalCommonInfo {
     available: number;
-    onOrders: number;
-    btcValue: number;
+    onOrders?: number;
+    btcValue?: number;
 }
 export interface IDepositAddress {
     name: string;
